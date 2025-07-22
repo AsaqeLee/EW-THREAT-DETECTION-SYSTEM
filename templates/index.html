@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELECTROMAGNETIC WARFARE THREAT DETECTION SYSTEM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EW THREAT DETECTION SYSTEM</h1>
+            <div class="status-bar">
+                <span id="system-status">SYSTEM STATUS: OPERATIONAL</span>
+                <span id="last-update">LAST SCAN: --</span>
+            </div>
+        </header>
+
+        <main>
+            <div class="control-panel">
+                <h2>TACTICAL CONTROL</h2>
+                <div class="controls">
+                    <div class="coordinate-mode">
+                        <label>
+                            <input type="radio" name="coord-mode" value="geographic" checked> GEOGRAPHIC (LAT/LON)
+                        </label>
+                        <label>
+                            <input type="radio" name="coord-mode" value="grid"> GRID (X/Y)
+                        </label>
+                    </div>
+                    <div id="geographic-inputs">
+                        <div class="input-group">
+                            <label for="target-lat">TARGET LATITUDE:</label>
+                            <input type="number" id="target-lat" value="39.9042" step="0.000001" placeholder="39.9042">
+                        </div>
+                        <div class="input-group">
+                            <label for="target-lon">TARGET LONGITUDE:</label>
+                            <input type="number" id="target-lon" value="116.4074" step="0.000001" placeholder="116.4074">
+                        </div>
+                    </div>
+                    <div id="grid-inputs" style="display: none;">
+                        <div class="input-group">
+                            <label for="interference-x">TARGET X-COORD (km):</label>
+                            <input type="number" id="interference-x" value="0" min="-100" max="100" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label for="interference-y">TARGET Y-COORD (km):</label>
+                            <input type="number" id="interference-y" value="0" min="-100" max="100" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>
+                            <input type="checkbox" id="add-anomaly"> SIMULATE JAMMING
+                        </label>
+                    </div>
+                    <div class="input-group">
+                        <label for="path-loss-exponent">PROPAGATION INDEX:</label>
+                        <input type="number" id="path-loss-exponent" value="2.0" min="1.0" max="5.0" step="0.1">
+                        <span class="input-hint">SIGNAL ATTENUATION FACTOR</span>
+                    </div>
+                    <div class="button-group">
+                        <button id="simulate-btn" class="btn-primary">GENERATE INTEL</button>
+                        <button id="locate-btn" class="btn-secondary" disabled>TRIANGULATE TARGET</button>
+                        <button id="real-data-btn" class="btn-outline">INPUT REAL DATA</button>
+                        <button id="reset-stations-btn" class="btn-outline">RESET SENSORS</button>
+                        <button id="manage-stations-btn" class="btn-outline">MANAGE SENSORS</button>
+                    </div>
+
+                    <!-- 电台管理对话框 -->
+                    <div id="stations-modal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>SENSOR ARRAY MANAGEMENT</h3>
+                                <span class="close-modal">&times;</span>
+                            </div>
+                            <div class="modal-body">
+                                <div class="stations-list">
+                                    <table id="stations-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>NAME</th>
+                                                <th>LATITUDE</th>
+                                                <th>LONGITUDE</th>
+                                                <th>ACTIONS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="stations-tbody">
+                                            <!-- 动态填充 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="station-form">
+                                    <h4>ADD/EDIT SENSOR</h4>
+                                    <input type="hidden" id="edit-station-id" value="">
+                                    <div class="form-group">
+                                        <label for="station-name">NAME:</label>
+                                        <input type="text" id="station-name" placeholder="SENSOR-1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="station-lat">LATITUDE:</label>
+                                        <input type="number" id="station-lat" step="0.000001">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="station-lon">LONGITUDE:</label>
+                                        <input type="number" id="station-lon" step="0.000001">
+                                    </div>
+                                    <div class="form-buttons">
+                                        <button id="add-station-btn" class="btn-primary">ADD SENSOR</button>
+                                        <button id="update-station-btn" class="btn-secondary" style="display:none;">UPDATE</button>
+                                        <button id="cancel-edit-btn" class="btn-outline" style="display:none;">CANCEL</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization-area">
+                <div class="chart-container">
+                    <h3>TACTICAL SITUATION DISPLAY</h3>
+                    <div class="map-toggle-buttons">
+                        <button id="show-map-btn" class="btn-map active">MAP VIEW</button>
+                        <button id="show-chart-btn" class="btn-map">GRID VIEW</button>
+                    </div>
+                    <div id="map-container" style="height: 500px; width: 100%; position: relative; z-index: 1; border: 1px solid #00ff41;"></div>
+                    <canvas id="location-chart" style="display: none;"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3>SIGNAL INTELLIGENCE</h3>
+                    <canvas id="power-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="data-panel">
+                <h3>REAL-TIME INTELLIGENCE</h3>
+                <div class="data-display">
+                    <div class="data-section">
+                        <h4>SENSOR ARRAY STATUS</h4>
+                        <div id="power-data-display">AWAITING DATA...</div>
+                    </div>
+                    <div class="data-section">
+                        <h4>TARGET COORDINATES</h4>
+                        <div id="location-result-display">NO TARGET ACQUIRED</div>
+                    </div>
+                    <div class="data-section">
+                        <h4>THREAT ASSESSMENT</h4>
+                        <div id="anomaly-result-display">SCANNING...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 实时数据输入对话框 -->
+    <div id="real-data-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>REAL-TIME SENSOR DATA INPUT</h3>
+                <span class="close-real-data-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="real-data-form">
+                    <div class="form-group">
+                        <label>SELECT INPUT METHOD:</label>
+                        <div class="input-method-selector">
+                            <label>
+                                <input type="radio" name="input-method" value="manual" checked> MANUAL INPUT
+                            </label>
+                            <label>
+                                <input type="radio" name="input-method" value="batch"> BATCH IMPORT
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="manual-input-section">
+                        <div class="power-data-table">
+                            <table id="power-input-table">
+                                <thead>
+                                    <tr>
+                                        <th>SENSOR ID</th>
+                                        <th>NAME</th>
+                                        <th>POWER (dBm)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="power-input-tbody">
+                                    <!-- 动态填充 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="batch-input-section" style="display: none;">
+                        <div class="form-group">
+                            <label for="batch-data">PASTE CSV OR JSON DATA:</label>
+                            <textarea id="batch-data" rows="10" placeholder="Format: station_id,power_value (CSV) or JSON array"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>FORMAT:</label>
+                            <div class="format-selector">
+                                <label>
+                                    <input type="radio" name="data-format" value="csv" checked> CSV
+                                </label>
+                                <label>
+                                    <input type="radio" name="data-format" value="json"> JSON
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button id="apply-real-data-btn" class="btn-primary">APPLY DATA</button>
+                        <button id="clear-real-data-btn" class="btn-outline">CLEAR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/map_manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/station_manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/real_data_manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
