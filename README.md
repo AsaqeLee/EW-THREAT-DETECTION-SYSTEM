@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](#-许可证)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Development-orange.svg)](#)
 
 基于分布式传感器阵列的军事级电磁干扰源定位系统，采用Python Flask + Web前端 + 真实地图集成实现。系统具备专业的军事化界面和高精度定位算法，适用于电子战威胁检测和定位任务。
