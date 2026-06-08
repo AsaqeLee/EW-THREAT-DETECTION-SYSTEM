@@ -4,9 +4,9 @@
 
 **Military-Grade Electromagnetic Intelligence & Source Localization System**
 
-[![Architecture: Distributed](https://img.shields.io/badge/architecture-distributed-000000.svg?style=flat-square)](https://github.com/AsaqeLee/EW-THREAT-DETECTION-SYSTEM)
+[![Architecture: Blueprint](https://img.shields.io/badge/architecture-blueprint-000000.svg?style=flat-square)](https://github.com/AsaqeLee/EW-THREAT-DETECTION-SYSTEM)
 [![Standard: High--Integrity](https://img.shields.io/badge/standard-high--integrity-000000.svg?style=flat-square)](https://github.com/AsaqeLee/EW-THREAT-DETECTION-SYSTEM)
-[![Framework: Flask](https://img.shields.io/badge/framework-flask-000000.svg?style=flat-square)](https://github.com/AsaqeLee/EW-THREAT-DETECTION-SYSTEM)
+[![Tooling: Ruff](https://img.shields.io/badge/tooling-ruff-000000.svg?style=flat-square)](https://github.com/AsaqeLee/EW-THREAT-DETECTION-SYSTEM)
 
 English | [简体中文](./README_ZH.md)
 
@@ -16,78 +16,45 @@ English | [简体中文](./README_ZH.md)
 
 ## Introduction
 
-The **EW Threat Detection System** is a distributed sensor array platform designed for high-precision localization of electromagnetic interference. Integrating Flask with real-world mapping (OpenStreetMap), the system provides a tactical interface for military-grade threat assessment, utilizing multi-algorithm fusion for robust performance in hostile environments.
-
->[!IMPORTANT]
->This system employs a weighted multi-algorithm engine (Least Squares, WLS, Centroid) coupled with real-time anomaly detection to eliminate compromised sensor data from tactical calculations.
-
----
-
-## Tactical Architecture
-
-The system orchestrates distributed sensor nodes through a centralized localization engine.
-
-```mermaid
-graph TD
-    Sensors[Sensor Array] --> Anomaly{Anomaly Detector}
-    Anomaly -- Filtered Data --> Engine[Localization Engine]
-    Engine --> Assessment[Threat Assessment]
-    Assessment --> Dashboard[Tactical Dashboard]
-    
-    style Anomaly fill:none,stroke:#000,stroke-width:2px
-    style Engine fill:none,stroke:#000,stroke-width:2px
-```
+**EW Threat Detection** is a distributed tactical platform for high-precision localization of electromagnetic interference. Utilizing a Blueprint-based Flask architecture and automated quality scoring, the system provides a modular foundation for military-grade threat assessment.
 
 ---
 
 ## Technical Specifications
 
 <details>
-<summary><b>Localization Engine</b></summary>
+<summary><b>Decoupled Architecture</b></summary>
 
-The engine fuses three primary methodologies:
-1. **Weighted Least Squares (WLS):** Prioritizes high-SNR signals for precision.
-2. **Standard Least Squares:** Benchmarking for stable signal environments.
-3. **Centroid Localization:** Rapid approximation and robust fallback.
+The system has been refactored into modular Blueprints for maximum maintainability:
+- **API Blueprint:** `modules/api_routes.py` (Core localization and simulation logic).
+- **UI Blueprint:** `modules/ui_routes.py` (Tactical dashboard and static rendering).
+- **Factory Pattern:** `app.py` serves as a clean entry point for component initialization.
 </details>
 
 <details>
-<summary><b>Anomaly Detection Protocol</b></summary>
+<summary><b>Integrity Verification</b></summary>
 
-Ensures the integrity of the tactical display:
-- **Z-Score Detection:** Statistical identification of out-of-band power reports.
-- **IQR Filtering:** Robust exclusion of non-standard interference data.
-- **Distance-Based Validation:** Cross-referencing power decay against spatial coordinates.
+Automated tests ensure the reliability of tactical calculations:
+- `tests/test_location.py`: Validates positioning algorithm accuracy.
+- `tests/test_anomaly.py`: Verifies Z-score and IQR-based anomaly detection logic.
 </details>
 
 <details>
-<summary><b>Enterprise Installation & Setup</b></summary>
+<summary><b>Deployment Standard</b></summary>
 
 ### Prerequisites
 - Python 3.8+
-- Modern Web Browser (Map rendering)
+- Modern project management via `pyproject.toml`
 
-### Deployment
+### Setup
 ```bash
-# Clone the tactical repository
-git clone https://github.com/AsaqeLee/EW-THREAT-DETECTION-SYSTEM.git
-cd EW-THREAT-DETECTION-SYSTEM
-
-# Install intelligence dependencies
+# Install tactical dependencies
 pip install -r requirements.txt
 
 # Launch mission control
-python app.py
+python run.py
 ```
 </details>
-
----
-
-## Strategic Boundaries
-
-- **Real-World Integration:** Fully supports GPS coordinate systems and geo-conversion.
-- **Tactical Scaling:** Designed for 100km x 100km operational theaters.
-- **High Integrity:** Continuous quality scoring (Excellent to Poor) for all localized results.
 
 ---
 
