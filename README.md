@@ -1,65 +1,70 @@
-<div align="center">
-
-# EW Threat Detection
-
-**Military-Grade Electromagnetic Intelligence & Source Localization System**
-
-[![Architecture: Blueprint](https://img.shields.io/badge/architecture-blueprint-000000.svg?style=flat-square)](https://github.com/AsaqeLee/EW-THREAT-DETECTION-SYSTEM)
-[![Standard: High--Integrity](https://img.shields.io/badge/standard-high--integrity-000000.svg?style=flat-square)](https://github.com/AsaqeLee/EW-THREAT-DETECTION-SYSTEM)
-[![Tooling: Ruff](https://img.shields.io/badge/tooling-ruff-000000.svg?style=flat-square)](https://github.com/AsaqeLee/EW-THREAT-DETECTION-SYSTEM)
+# EW Threat Detection System
 
 English | [简体中文](./README_ZH.md)
 
-</div>
+Distributed **electromagnetic interference** detection and source-localization prototype built with Python and Flask. The application exposes localization / simulation APIs and a browser dashboard for experimentation and coursework-style demos.
 
----
+## Overview
 
-## Introduction
+The server is assembled with Flask blueprints:
 
-**EW Threat Detection** is a distributed tactical platform for high-precision localization of electromagnetic interference. Utilizing a Blueprint-based Flask architecture and automated quality scoring, the system provides a modular foundation for military-grade threat assessment.
+- **API** — `modules/api_routes.py` (localization and simulation endpoints)
+- **UI** — `modules/ui_routes.py` (dashboard and static pages)
+- **Factory** — `app.py` / `run.py` as the application entry
 
----
+Supporting modules include anomaly detection (`modules/anomaly_detector.py`), geodetic helpers, and a data simulator.
 
-## Technical Specifications
+## Features / scope
 
-<details>
-<summary><b>Decoupled Architecture</b></summary>
+- Blueprint-based Flask layout separating API and UI
+- Localization algorithm utilities under `modules/`
+- Anomaly scoring helpers (including Z-score / IQR-oriented tests)
+- Automated tests under `tests/` (e.g. `test_location.py`, `test_anomaly.py`)
+- Frontend assets under `static/` and `templates/`
 
-The system has been refactored into modular Blueprints for maximum maintainability:
-- **API Blueprint:** `modules/api_routes.py` (Core localization and simulation logic).
-- **UI Blueprint:** `modules/ui_routes.py` (Tactical dashboard and static rendering).
-- **Factory Pattern:** `app.py` serves as a clean entry point for component initialization.
-</details>
+## Requirements
 
-<details>
-<summary><b>Integrity Verification</b></summary>
-
-Automated tests ensure the reliability of tactical calculations:
-- `tests/test_location.py`: Validates positioning algorithm accuracy.
-- `tests/test_anomaly.py`: Verifies Z-score and IQR-based anomaly detection logic.
-</details>
-
-<details>
-<summary><b>Deployment Standard</b></summary>
-
-### Prerequisites
 - Python 3.8+
-- Modern project management via `pyproject.toml`
+- Packages listed in `requirements.txt`
+- Project metadata in `pyproject.toml` (Ruff / packaging)
 
-### Setup
+## Getting started
+
 ```bash
-# Install tactical dependencies
+git clone https://github.com/AsaqeLee/EW-THREAT-DETECTION-SYSTEM.git
+cd EW-THREAT-DETECTION-SYSTEM
 pip install -r requirements.txt
-
-# Launch mission control
 python run.py
 ```
-</details>
 
----
+Run tests:
 
-<div align="center">
+```bash
+pytest tests/
+```
 
-&copy; 2026 AsaqeLee. Engineered for electromagnetic superiority.
+## Project layout
 
-</div>
+```text
+.
+├── app.py
+├── run.py
+├── modules/
+│   ├── api_routes.py
+│   ├── ui_routes.py
+│   ├── location_algorithm.py
+│   ├── anomaly_detector.py
+│   └── …
+├── static/
+├── templates/
+├── tests/
+└── requirements.txt
+```
+
+## Status / limitations
+
+Prototype / research dashboard. It is **not** a certified military or operational EW product. Accuracy depends on sensor geometry and simulated inputs. Prefer measured language when describing results.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
